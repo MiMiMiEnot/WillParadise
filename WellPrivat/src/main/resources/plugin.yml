@@ -1,0 +1,9 @@
+name: WillPrivate
+main: me.enot.WellPrivate
+version: 0.0.1 BETA
+
+author: MiMiMiEnot
+
+commands:
+  rg:
+    description: ""
