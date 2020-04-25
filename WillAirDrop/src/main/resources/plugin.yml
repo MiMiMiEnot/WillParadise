@@ -1,0 +1,12 @@
+name: WillAirDrop
+main: me.enot.willairdrop.WillAirDrop
+version: 0.1.4
+author: MiMiMiEnot
+
+softdepend:
+  - HolographicDisplays
+  - PlaceholderAPI
+
+commands:
+  airdrop:
+    description: ""
