@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -120,10 +121,24 @@ public class AirDropLogick {
         Hologram hol = HologramsAPI.createHologram(WillAirDrop.getPlugin(), drop.getHologram().getLocation());
         ItemLine itemLine = hol.appendItemLine(new ItemStack(Settings.getAnimationMaterial()));
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Hologram animation до начала анимации " + hol.getY());
-        while (hol.getY() > drop.getLocation().getY()) {
+
+
+         new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(hol.getY() > drop.getLocation().getY()) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getY() + " > " + drop.getLocation().getY());
+                    hol.teleport(hol.getLocation().getWorld(), hol.getX(), hol.getY() - Settings.getAnimationMoveY(), hol.getZ());
+                } else {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(WillAirDrop.getPlugin(), 0, Settings.getAnimationSchedulerTicks());
+        /*while (hol.getY() > drop.getLocation().getY()) {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getY() + " > " + drop.getLocation().getY());
             hol.teleport(hol.getLocation().getWorld(), hol.getX(), hol.getY() - Settings.getAnimationMoveY(), hol.getZ());
-        }
+        }*/
+
         Bukkit.getConsoleSender().sendMessage("Удаление голограммы ");
         hol.delete();
         Bukkit.getConsoleSender().sendMessage("Установка сундука ");
