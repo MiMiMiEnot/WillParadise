@@ -119,7 +119,10 @@ public class AirDropLogick {
     public static void doAnimation(AirDrop drop) {
         // TODO: 16.03.2020 Создание анимации
         drop.getLocation().setY(Calculations.generateValidY(drop.getLocation().getBlockX(), drop.getLocation().getBlockZ()));
-        Location location = drop.getLocation().add(0.5, 3, 0.5);
+        Location location = drop.getLocation().clone();
+        location.setX(drop.getLocation().getBlockX() + 0.5);
+        location.setY(drop.getLocation().getBlockY() + 3);
+        location.setZ(drop.getLocation().getBlockZ() + 0.5);
         Bukkit.getConsoleSender().sendMessage("dropY: " + drop.getLocation().getY() + " hologramY: " + location.getY());
         Hologram hol = HologramsAPI.createHologram(WillAirDrop.getPlugin(), location);
         hol.appendItemLine(new ItemStack(Settings.getAnimationMaterial()));
