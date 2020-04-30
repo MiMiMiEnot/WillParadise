@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValueFactory;
 import me.enot.willairdrop.WillAirDrop;
 import me.enot.willairdrop.logic.utils.Calculations;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.plugin.Plugin;
 
@@ -78,6 +79,7 @@ public class Settings {
     private static Material animationMaterial;
     private static int animationSchedulerTicks;
     private static double animationMoveY;
+    private static Color animationColor;
 
     public static void reload() {
         if (file == null || settingscnf == null) {
@@ -112,6 +114,10 @@ public class Settings {
         animationMaterial = getSettings().getEnum(Material.class, "animation.item");
         animationSchedulerTicks = getSettings().getInt("animation.move-every");
         animationMoveY = getSettings().getDouble("animation.move-y");
+        animationColor = Color.fromBGR(
+                getSettings().getInt("animation.color.red"),
+                getSettings().getInt("animation.color.green"),
+                getSettings().getInt("animation.color.blue"));
 
         if (getSettings().getBoolean("generate-example")) {
             File examplefile = new File(lootdir, "example.conf");
@@ -206,6 +212,10 @@ public class Settings {
 
     public static int getAnimationSchedulerTicks() {
         return animationSchedulerTicks;
+    }
+
+    public static Color getAnimationColor() {
+        return animationColor;
     }
 
     private static void save(){

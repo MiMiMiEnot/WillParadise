@@ -1,6 +1,6 @@
 name: WillAirDrop
 main: me.enot.willairdrop.WillAirDrop
-version: 0.1.5
+version: 0.2.0
 author: MiMiMiEnot
 
 softdepend:
