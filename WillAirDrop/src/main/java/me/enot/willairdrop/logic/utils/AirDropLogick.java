@@ -120,6 +120,7 @@ public class AirDropLogick {
         // TODO: 16.03.2020 Создание анимации
         drop.getLocation().setY(Calculations.generateValidY(drop.getLocation().getBlockX(), drop.getLocation().getBlockZ()));
         Location location = drop.getLocation().add(0.5, 3, 0.5);
+        Bukkit.getConsoleSender().sendMessage("dropY: " + drop.getLocation().getY() + " hologramY: " + location.getY());
         Hologram hol = HologramsAPI.createHologram(WillAirDrop.getPlugin(), location);
         hol.appendItemLine(new ItemStack(Settings.getAnimationMaterial()));
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Hologram animation до начала анимации " + hol.getY());
@@ -141,21 +142,21 @@ public class AirDropLogick {
                     Material material = Settings.getLootMaterial();
                     Block block = drop.getLocation().getBlock();
                     block.setType(material);
+                    Location location = drop.getLocation().clone();
+                    double x = location.getBlockX() + Settings.getHologramX();
+                    double y = location.getBlockY() + Settings.getHologramY();
+                    double z = location.getBlockZ() + Settings.getHologramZ();
+                    loc.setX(x);
+                    loc.setY(y);
+                    loc.setZ(z);
+                    drop.setHologram(HologramsAPI.createHologram(WillAirDrop.getPlugin(), loc));
+                    for (String s : Language.getMessage(Langs.hologram__airdrop)) {
+                        drop.getHologram().appendTextLine(s);
+                    }
                     dropList.put(block, drop);
                 }
             }
         }.runTaskTimer(WillAirDrop.getPlugin(), 0, Settings.getAnimationSchedulerTicks());
-        Location loc = drop.getLocation().clone();
-        double x = loc.getBlockX() + Settings.getHologramX();
-        double y = loc.getBlockY() + Settings.getHologramY();
-        double z = loc.getBlockZ() + Settings.getHologramZ();
-        loc.setX(x);
-        loc.setY(y);
-        loc.setZ(z);
-        drop.setHologram(HologramsAPI.createHologram(WillAirDrop.getPlugin(), loc));
-        for (String s : Language.getMessage(Langs.hologram__airdrop)) {
-            drop.getHologram().appendTextLine(s);
-        }
         Inventory inv = drop.getLoot().getInventory();
         inventoryMap.put(drop, clone(inv));
     }
