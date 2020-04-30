@@ -180,10 +180,9 @@ public class AirDropLogick {
     }
     public static void spawnFireworks(Location loc){
         Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-        FireworkMeta fwm = fw.getFireworkMeta();
-
+        FireworkMeta fwm = fw.getFireworkMeta();;
         fwm.setPower(2);
-        fwm.addEffect(FireworkEffect.builder().withColor(Color.LIME).flicker(true).build());
+        fwm.addEffect(FireworkEffect.builder().withColor(Color.YELLOW).flicker(true).build());
 
         fw.setFireworkMeta(fwm);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WillAirDrop.getPlugin(), fw::detonate, (2));
