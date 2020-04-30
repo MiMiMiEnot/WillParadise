@@ -10,13 +10,13 @@ import me.enot.willairdrop.configs.language.Language;
 import me.enot.willairdrop.configs.language.Replace;
 import me.enot.willairdrop.logic.AirDrop;
 import me.enot.willairdrop.serializer.Loot;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.ParseException;
@@ -118,42 +118,46 @@ public class AirDropLogick {
 
     public static void doAnimation(AirDrop drop) {
         // TODO: 16.03.2020 Создание анимации
-        Hologram hol = HologramsAPI.createHologram(WillAirDrop.getPlugin(), drop.getHologram().getLocation());
-        ItemLine itemLine = hol.appendItemLine(new ItemStack(Settings.getAnimationMaterial()));
+        drop.getLocation().setY(Calculations.generateValidY(drop.getLocation().getBlockX(), drop.getLocation().getBlockZ()));
+        Location location = drop.getLocation().add(0.5, 3, 0.5);
+        Hologram hol = HologramsAPI.createHologram(WillAirDrop.getPlugin(), location);
+        hol.appendItemLine(new ItemStack(Settings.getAnimationMaterial()));
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Hologram animation до начала анимации " + hol.getY());
 
-
-         new BukkitRunnable() {
+        new BukkitRunnable() {
             @Override
             public void run() {
-                if(hol.getY() > drop.getLocation().getY()) {
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getY() + " > " + drop.getLocation().getY());
-                    hol.teleport(hol.getLocation().getWorld(), hol.getX(), hol.getY() - Settings.getAnimationMoveY(), hol.getZ());
+                Location loc = new Location(hol.getLocation().getWorld(), hol.getX(), hol.getY() - Settings.getAnimationMoveY(), hol.getZ());
+                if (hol.getLocation().getY() > drop.getLocation().getY()) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getLocation().getY()+ " > " + drop.getLocation().getY());
+                    hol.teleport(loc);
                 } else {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getLocation().getY()+ " < " + drop.getLocation().getY());
+                    Bukkit.getConsoleSender().sendMessage("Удаление голограммы ");
+                    spawnFireworks(hol.getLocation());
+                    hol.delete();
                     cancel();
+                    Bukkit.getConsoleSender().sendMessage("Установка сундука ");
+                    Material material = Settings.getLootMaterial();
+                    Block block = drop.getLocation().getBlock();
+                    block.setType(material);
+                    dropList.put(block, drop);
                 }
             }
         }.runTaskTimer(WillAirDrop.getPlugin(), 0, Settings.getAnimationSchedulerTicks());
-        /*while (hol.getY() > drop.getLocation().getY()) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "while " + hol.getY() + " > " + drop.getLocation().getY());
-            hol.teleport(hol.getLocation().getWorld(), hol.getX(), hol.getY() - Settings.getAnimationMoveY(), hol.getZ());
-        }*/
-
-        Bukkit.getConsoleSender().sendMessage("Удаление голограммы ");
-        hol.delete();
-        Bukkit.getConsoleSender().sendMessage("Установка сундука ");
-        //Bukkit.getScheduler().runTaskLater(WillAirDrop.getPlugin(), () -> {
-        Material material = Settings.getLootMaterial();
-        drop.getLocation().setY(Calculations.generateValidY(drop.getLocation().getBlockX(), drop.getLocation().getBlockZ()));
-        Block block = drop.getLocation().getBlock();
-        block.setType(material);
+        Location loc = drop.getLocation().clone();
+        double x = loc.getBlockX() + Settings.getHologramX();
+        double y = loc.getBlockY() + Settings.getHologramY();
+        double z = loc.getBlockZ() + Settings.getHologramZ();
+        loc.setX(x);
+        loc.setY(y);
+        loc.setZ(z);
+        drop.setHologram(HologramsAPI.createHologram(WillAirDrop.getPlugin(), loc));
         for (String s : Language.getMessage(Langs.hologram__airdrop)) {
             drop.getHologram().appendTextLine(s);
         }
-        dropList.put(block, drop);
         Inventory inv = drop.getLoot().getInventory();
         inventoryMap.put(drop, clone(inv));
-        //}, 5 * 20);
     }
 
     public static HashMap<AirDrop, Inventory> getInventoryMap() {
@@ -170,5 +174,14 @@ public class AirDropLogick {
         }
         return inventory;
     }
-}
+    public static void spawnFireworks(Location loc){
+        Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+        FireworkMeta fwm = fw.getFireworkMeta();
 
+        fwm.setPower(2);
+        fwm.addEffect(FireworkEffect.builder().withColor(Color.LIME).flicker(true).build());
+
+        fw.setFireworkMeta(fwm);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WillAirDrop.getPlugin(), fw::detonate, (2));
+    }
+}

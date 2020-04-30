@@ -28,7 +28,7 @@ public class AirDrop{
         this.loot = loot;
         this.location = location;
         this.opened = opened;
-        Location loc = this.location.clone();
+        /*Location loc = this.location.clone();
         double x = loc.getBlockX() + Settings.getHologramX();
         double y = loc.getBlockY() + Settings.getHologramY();
         double z = loc.getBlockZ() + Settings.getHologramZ();
@@ -36,13 +36,12 @@ public class AirDrop{
         loc.setY(y);
         loc.setZ(z);
         hologram = HologramsAPI.createHologram(WillAirDrop.getPlugin(), loc);
-        hologram.getVisibilityManager().setVisibleByDefault(true);
+        hologram.getVisibilityManager().setVisibleByDefault(true);*/
     }
 
     public Loot getLoot() {
         return loot;
     }
-
 
     public Location getLocation() {
         return location;
@@ -58,6 +57,10 @@ public class AirDrop{
 
     public Hologram getHologram() {
         return hologram;
+    }
+
+    public void setHologram(Hologram hologram) {
+        this.hologram = hologram;
     }
 
     public void call(){
